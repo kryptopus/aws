@@ -5,7 +5,6 @@ const AWS = require("aws-sdk");
 const dynamo = new AWS.DynamoDB();
 const lambda = new AWS.Lambda();
 const baseUrl = "https://api.binance.com";
-const tableName = `candles`;
 
 const ensureTable = async name => {
   try {
@@ -82,7 +81,7 @@ module.exports.collect = async (event, context) => {
 
     await dynamo
       .putItem({
-        TableName: tableName,
+        TableName: process.env.CANDLE_TABLE_NAME,
         Item: {
           ExchangeSymbolInterval: { S: `Binance-${symbol}-1m` },
           Time: { N: String(openTime) },
@@ -105,7 +104,7 @@ module.exports.collect = async (event, context) => {
 };
 
 module.exports.collectAll = async (event, context) => {
-  await ensureTable(tableName);
+  await ensureTable(process.env.CANDLE_TABLE_NAME);
 
   const {
     data: { symbols }
@@ -116,7 +115,7 @@ module.exports.collectAll = async (event, context) => {
   let invokationCount = 0;
   for (let { baseAsset, quoteAsset } of symbols) {
     await lambda.invoke({
-      FunctionName: "binance-collector-dev-collect",
+      FunctionName: process.env.COLLECT_FUNCTION_NAME,
       InvocationType: "Event",
       LogType: "None",
       Payload: JSON.stringify({

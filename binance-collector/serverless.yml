@@ -4,10 +4,16 @@ provider:
   name: aws
   runtime: nodejs8.10
 
-  stage: dev
-  region: eu-west-1
+  stage: ${file(../parameters.yml):stage}
+  region: ${file(../parameters.yml):region}
   memorySize: 128
   timeout: 60
+
+  deploymentBucket:
+    name: ${file(../parameters.yml):deploymentBucketName}
+
+  tags:
+    project: Kryptopus
 
   iamRoleStatements:
     - Effect: Allow
@@ -19,21 +25,57 @@ provider:
       Action:
         - dynamodb:CreateTable
         - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:eu-west-1:*:*"
+      Resource: "*"
+
+plugins:
+  - serverless-dynamodb-autoscaling
+
+custom:
+  capacities:
+    - table: CandleTable
+      read:
+        minimum: 5        # Minimum read capacity
+        maximum: 100      # Maximum read capacity
+        usage: 0.75       # Targeted usage percentage
+      write:
+        minimum: 5        # Minimum write capacity
+        maximum: 100      # Maximum write capacity
+        usage: 0.75       # Targeted usage percentage
 
 functions:
   collect-all:
+    name: ${self:provider.stage}-kryptopus-collect-binance-symbols
     handler: handler.collectAll
+    environment:
+      CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
+      COLLECT_FUNCTION_NAME: ${self:functions.collect.name}
     events:
       - schedule: rate(1 minute)
 
   collect:
+    name: ${self:provider.stage}-kryptopus-collect-binance-candles
     handler: handler.collect
+    environment:
+      CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
 
+resources:
+  Resources:
+    CandleTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(../parameters.yml):candleTableName}
+        AttributeDefinitions:
+          - AttributeName: ExchangeSymbolInterval
+            AttributeType: S
+          - AttributeName: Time
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ExchangeSymbolInterval
+            KeyType: HASH
+          - AttributeName: Time
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
 

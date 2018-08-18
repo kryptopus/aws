@@ -1,21 +1,18 @@
 {
-  "name": "binance-collector",
-  "description": "Binance collector service",
+  "name": "candle-computer",
+  "description": "Candle computer service",
   "author": "neolao <contact@neolao.com>",
   "private": true,
   "repository": "https://github.com/solfegejs/serverless.git",
   "license": "MIT",
   "scripts": {
     "deploy": "serverless deploy -v",
-    "collect-all": "serverless invoke -f collect-all -l",
-    "collect": "serverless invoke -f collect -l",
+    "compute-5m": "serverless invoke -f compute-5m -l",
     "logs": "serverless logs -f collect -t",
     "remove": "serverless remove"
   },
   "dependencies": {
     "aws-sdk": "^2.296.0",
-    "axios": "^0.18.0",
-    "serverless": "^1.30.1",
-    "serverless-dynamodb-autoscaling": "^0.6.2"
+    "serverless": "^1.30.1"
   }
 }

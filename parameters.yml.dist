@@ -1,0 +1,4 @@
+stage: dev
+region: eu-west-1
+candleTableName: kryptopus-candles
+deploymentBucketName: kryptopus-serverless-deployment

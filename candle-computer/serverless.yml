@@ -1,0 +1,36 @@
+service: candle-computer
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+  stage: ${file(../parameters.yml):stage}
+  region: ${file(../parameters.yml):region}
+  memorySize: 128
+  timeout: 60
+
+  deploymentBucket:
+    name: ${file(../parameters.yml):deploymentBucketName}
+
+  tags:
+    project: Kryptopus
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "*"
+
+functions:
+  compute-5m:
+    name: ${self:provider.stage}-kryptopus-compute-candle
+    handler: handler.compute
+    environment:
+      CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
+      INTERVAL: 5m
+
+

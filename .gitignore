@@ -1,3 +1,4 @@
 .aws
 .serverless
+parameters.yml
 node_modules
