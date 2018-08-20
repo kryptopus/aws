@@ -7,7 +7,6 @@ provider:
   stage: ${file(../parameters.yml):stage}
   region: ${file(../parameters.yml):region}
   memorySize: 128
-  timeout: 60
 
   deploymentBucket:
     name: ${file(../parameters.yml):deploymentBucketName}
@@ -18,19 +17,38 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - lambda:InvokeFunction
         - dynamodb:Query
-        - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
+        - dynamodb:Scan
       Resource: "*"
 
 functions:
-  compute-5m:
+  compute:
     name: ${self:provider.stage}-kryptopus-compute-candle
     handler: handler.compute
     environment:
       CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
-      INTERVAL: 5m
+    timeout: 60
+
+  compute-interval:
+    name: ${self:provider.stage}-kryptopus-compute-interval-candles
+    handler: handler.computeAll
+    timeout: 300
+    environment:
+      SYMBOL_TABLE_NAME: ${file(../parameters.yml):symbolTableName}
+      COMPUTE_FUNCTION_NAME: ${self:functions.compute.name}
+    events:
+      - schedule: 
+          name: ${self:provider.stage}-kryptopus-compute-5m-candles
+          description: Compute 5m candles
+          rate: rate(5 minutes)
+          input:
+            sourceIntervalName: 1m
+            sourceIntervalDuration: 60000
+            targetIntervalName: 5m
+            targetIntervalDuration: 300000
+
+
 
 

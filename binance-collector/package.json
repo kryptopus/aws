@@ -3,18 +3,20 @@
   "description": "Binance collector service",
   "author": "neolao <contact@neolao.com>",
   "private": true,
-  "repository": "https://github.com/solfegejs/serverless.git",
+  "repository": "https://github.com/kryptopus/aws.git",
   "license": "MIT",
   "scripts": {
-    "deploy": "serverless deploy -v",
-    "collect-all": "serverless invoke -f collect-all -l",
-    "collect": "serverless invoke -f collect -l",
-    "logs": "serverless logs -f collect -t",
-    "remove": "serverless remove"
+    "start": "pm2 start candles.js",
+    "stop": "pm2 stop all && pm2 delete all",
+    "list": "pm2 list",
+    "logs": "pm2 logs candles",
+    "monitoring": "pm2 monit"
   },
   "dependencies": {
     "aws-sdk": "^2.296.0",
     "axios": "^0.18.0",
+    "binance": "^1.3.3",
+    "pm2": "^3.0.3",
     "serverless": "^1.30.1",
     "serverless-dynamodb-autoscaling": "^0.6.2"
   }

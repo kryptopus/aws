@@ -7,7 +7,6 @@ provider:
   stage: ${file(../parameters.yml):stage}
   region: ${file(../parameters.yml):region}
   memorySize: 128
-  timeout: 60
 
   deploymentBucket:
     name: ${file(../parameters.yml):deploymentBucketName}
@@ -19,13 +18,8 @@ provider:
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
-      Resource: "*"
-
-    - Effect: Allow
-      Action:
-        - dynamodb:CreateTable
-        - dynamodb:DescribeTable
         - dynamodb:PutItem
+        - dynamodb:Scan
       Resource: "*"
 
 plugins:
@@ -33,6 +27,16 @@ plugins:
 
 custom:
   capacities:
+    - table: SymbolTable
+      read:
+        minimum: 1        # Minimum read capacity
+        maximum: 100      # Maximum read capacity
+        usage: 0.75       # Targeted usage percentage
+      write:
+        minimum: 1        # Minimum write capacity
+        maximum: 100      # Maximum write capacity
+        usage: 0.75       # Targeted usage percentage
+
     - table: CandleTable
       read:
         minimum: 5        # Minimum read capacity
@@ -48,19 +52,44 @@ functions:
     name: ${self:provider.stage}-kryptopus-collect-binance-symbols
     handler: handler.collectAll
     environment:
+      SYMBOL_TABLE_NAME: ${file(../parameters.yml):symbolTableName}
       CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
       COLLECT_FUNCTION_NAME: ${self:functions.collect.name}
     events:
-      - schedule: rate(1 minute)
+      - schedule: 
+          name: ${self:provider.stage}-kryptopus-collect-binance-symbols
+          description: Collect Binance symbols every minutes
+          rate: rate(1 minute)
+          enabled: false
+    timeout: 300
 
   collect:
     name: ${self:provider.stage}-kryptopus-collect-binance-candles
     handler: handler.collect
     environment:
       CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
+    timeout: 60
 
 resources:
   Resources:
+    SymbolTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(../parameters.yml):symbolTableName}
+        AttributeDefinitions:
+          - AttributeName: Exchange
+            AttributeType: S
+          - AttributeName: Symbol
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Exchange
+            KeyType: HASH
+          - AttributeName: Symbol
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
     CandleTable:
       Type: AWS::DynamoDB::Table
       Properties:

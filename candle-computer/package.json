@@ -3,16 +3,17 @@
   "description": "Candle computer service",
   "author": "neolao <contact@neolao.com>",
   "private": true,
-  "repository": "https://github.com/solfegejs/serverless.git",
+  "repository": "https://github.com/kryptopus/aws.git",
   "license": "MIT",
   "scripts": {
     "deploy": "serverless deploy -v",
-    "compute-5m": "serverless invoke -f compute-5m -l",
-    "logs": "serverless logs -f collect -t",
+    "compute-all-5m": "serverless invoke -f compute-all-5m -l",
+    "logs": "serverless logs -f compute -t",
     "remove": "serverless remove"
   },
   "dependencies": {
     "aws-sdk": "^2.296.0",
+    "bignumber.js": "^7.2.1",
     "serverless": "^1.30.1"
   }
 }
