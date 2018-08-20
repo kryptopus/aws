@@ -10,7 +10,8 @@
     "stop": "pm2 stop all && pm2 delete all",
     "list": "pm2 list",
     "logs": "pm2 logs candles",
-    "monitoring": "pm2 monit"
+    "monitoring": "pm2 monit",
+    "how-to-install-service": "pm2 startup"
   },
   "dependencies": {
     "aws-sdk": "^2.296.0",
