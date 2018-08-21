@@ -1,0 +1,15 @@
+{
+  "name": "tables",
+  "description": "Tables",
+  "author": "neolao <contact@neolao.com>",
+  "private": true,
+  "repository": "https://github.com/kryptopus/aws.git",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "serverless deploy -v"
+  },
+  "dependencies": {
+    "serverless": "^1.30.1",
+    "serverless-dynamodb-autoscaling": "^0.6.2"
+  }
+}

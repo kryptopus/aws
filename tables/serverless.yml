@@ -96,7 +96,7 @@ resources:
           - AttributeName: ExchangeSymbol
             AttributeType: S
         KeySchema:
-          - AttributeName: ExchangeSymbolInterval
+          - AttributeName: ExchangeSymbol
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
