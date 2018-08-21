@@ -2,4 +2,5 @@ stage: dev
 region: eu-west-1
 symbolTableName: kryptopus-symbols
 candleTableName: kryptopus-candles
+tickerTableName: kryptopus-ticker
 deploymentBucketName: kryptopus-serverless-deployment

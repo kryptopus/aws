@@ -6,6 +6,7 @@
   "repository": "https://github.com/kryptopus/aws.git",
   "license": "MIT",
   "scripts": {
+    "deploy": "serverless deploy -v",
     "start": "pm2 start candles.js",
     "stop": "pm2 stop all && pm2 delete all",
     "list": "pm2 list",

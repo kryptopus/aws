@@ -39,16 +39,92 @@ functions:
       SYMBOL_TABLE_NAME: ${file(../parameters.yml):symbolTableName}
       COMPUTE_FUNCTION_NAME: ${self:functions.compute.name}
     events:
-      - schedule: 
+      - schedule:
           name: ${self:provider.stage}-kryptopus-compute-5m-candles
           description: Compute 5m candles
-          rate: rate(5 minutes)
+          rate: cron(*/5 * * * ? *)
           input:
             sourceIntervalName: 1m
             sourceIntervalDuration: 60000
             targetIntervalName: 5m
             targetIntervalDuration: 300000
 
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-15m-candles
+          description: Compute 15m candles
+          rate: cron(*/15 * * * ? *)
+          input:
+            sourceIntervalName: 5m
+            sourceIntervalDuration: 300000
+            targetIntervalName: 15m
+            targetIntervalDuration: 900000
 
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-30m-candles
+          description: Compute 30m candles
+          rate: cron(*/30 * * * ? *)
+          input:
+            sourceIntervalName: 15m
+            sourceIntervalDuration: 900000
+            targetIntervalName: 30m
+            targetIntervalDuration: 1800000
 
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-1h-candles
+          description: Compute 1h candles
+          rate: cron(0 * * * ? *)
+          input:
+            sourceIntervalName: 30m
+            sourceIntervalDuration: 1800000
+            targetIntervalName: 1h
+            targetIntervalDuration: 3600000
 
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-2h-candles
+          description: Compute 2h candles
+          rate: cron(0 */2 * * ? *)
+          input:
+            sourceIntervalName: 1h
+            sourceIntervalDuration: 3600000
+            targetIntervalName: 2h
+            targetIntervalDuration: 7200000
+
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-4h-candles
+          description: Compute 4h candles
+          rate: cron(0 */4 * * ? *)
+          input:
+            sourceIntervalName: 2h
+            sourceIntervalDuration: 7200000
+            targetIntervalName: 4h
+            targetIntervalDuration: 14400000
+
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-6h-candles
+          description: Compute 6h candles
+          rate: cron(0 */6 * * ? *)
+          input:
+            sourceIntervalName: 2h
+            sourceIntervalDuration: 7200000
+            targetIntervalName: 6h
+            targetIntervalDuration: 21600000
+
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-12h-candles
+          description: Compute 12h candles
+          rate: cron(0 */12 * * ? *)
+          input:
+            sourceIntervalName: 6h
+            sourceIntervalDuration: 21600000
+            targetIntervalName: 12h
+            targetIntervalDuration: 43200000
+
+      - schedule:
+          name: ${self:provider.stage}-kryptopus-compute-1d-candles
+          description: Compute 1d candles
+          rate: cron(0 0 * * ? *)
+          input:
+            sourceIntervalName: 12h
+            sourceIntervalDuration: 43200000
+            targetIntervalName: 1d
+            targetIntervalDuration: 86400000

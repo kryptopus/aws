@@ -17,7 +17,6 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - lambda:InvokeFunction
         - dynamodb:PutItem
         - dynamodb:Scan
       Resource: "*"
@@ -25,86 +24,18 @@ provider:
 plugins:
   - serverless-dynamodb-autoscaling
 
-custom:
-  capacities:
-    - table: SymbolTable
-      read:
-        minimum: 1        # Minimum read capacity
-        maximum: 100      # Maximum read capacity
-        usage: 0.75       # Targeted usage percentage
-      write:
-        minimum: 1        # Minimum write capacity
-        maximum: 100      # Maximum write capacity
-        usage: 0.75       # Targeted usage percentage
-
-    - table: CandleTable
-      read:
-        minimum: 5        # Minimum read capacity
-        maximum: 100      # Maximum read capacity
-        usage: 0.75       # Targeted usage percentage
-      write:
-        minimum: 5        # Minimum write capacity
-        maximum: 100      # Maximum write capacity
-        usage: 0.75       # Targeted usage percentage
 
 functions:
-  collect-all:
-    name: ${self:provider.stage}-kryptopus-collect-binance-symbols
-    handler: handler.collectAll
+  discover-symbols:
+    name: ${self:provider.stage}-kryptopus-discover-binance-symbols
+    handler: handler.discoverSymbols
     environment:
       SYMBOL_TABLE_NAME: ${file(../parameters.yml):symbolTableName}
-      CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
-      COLLECT_FUNCTION_NAME: ${self:functions.collect.name}
     events:
       - schedule: 
-          name: ${self:provider.stage}-kryptopus-collect-binance-symbols
-          description: Collect Binance symbols every minutes
-          rate: rate(1 minute)
-          enabled: false
+          name: ${self:provider.stage}-kryptopus-discover-binance-symbols
+          description: Discover Binance symbols every day
+          rate: rate(1 day)
+          enabled: true
     timeout: 300
-
-  collect:
-    name: ${self:provider.stage}-kryptopus-collect-binance-candles
-    handler: handler.collect
-    environment:
-      CANDLE_TABLE_NAME: ${file(../parameters.yml):candleTableName}
-    timeout: 60
-
-resources:
-  Resources:
-    SymbolTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${file(../parameters.yml):symbolTableName}
-        AttributeDefinitions:
-          - AttributeName: Exchange
-            AttributeType: S
-          - AttributeName: Symbol
-            AttributeType: S
-        KeySchema:
-          - AttributeName: Exchange
-            KeyType: HASH
-          - AttributeName: Symbol
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    CandleTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${file(../parameters.yml):candleTableName}
-        AttributeDefinitions:
-          - AttributeName: ExchangeSymbolInterval
-            AttributeType: S
-          - AttributeName: Time
-            AttributeType: N
-        KeySchema:
-          - AttributeName: ExchangeSymbolInterval
-            KeyType: HASH
-          - AttributeName: Time
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
 

@@ -1,0 +1,104 @@
+service: tables
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+  stage: ${file(../parameters.yml):stage}
+  region: ${file(../parameters.yml):region}
+  memorySize: 128
+
+  deploymentBucket:
+    name: ${file(../parameters.yml):deploymentBucketName}
+
+  tags:
+    project: Kryptopus
+
+plugins:
+  - serverless-dynamodb-autoscaling
+
+custom:
+  capacities:
+    - table: SymbolTable
+      read:
+        minimum: 1
+        maximum: 100
+        usage: 0.75
+      write:
+        minimum: 1
+        maximum: 100
+        usage: 0.75 
+
+    - table: CandleTable
+      read:
+        minimum: 5
+        maximum: 100
+        usage: 0.75
+      write:
+        minimum: 25
+        maximum: 100
+        usage: 0.75
+
+    - table: TickerTable
+      read:
+        minimum: 1
+        maximum: 100
+        usage: 0.75
+      write:
+        minimum: 1
+        maximum: 100
+        usage: 0.75
+
+
+resources:
+  Resources:
+    SymbolTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(../parameters.yml):symbolTableName}
+        AttributeDefinitions:
+          - AttributeName: Exchange
+            AttributeType: S
+          - AttributeName: Symbol
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Exchange
+            KeyType: HASH
+          - AttributeName: Symbol
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    CandleTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(../parameters.yml):candleTableName}
+        AttributeDefinitions:
+          - AttributeName: ExchangeSymbolInterval
+            AttributeType: S
+          - AttributeName: Time
+            AttributeType: N
+        KeySchema:
+          - AttributeName: ExchangeSymbolInterval
+            KeyType: HASH
+          - AttributeName: Time
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    TickerTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${file(../parameters.yml):tickerTableName}
+        AttributeDefinitions:
+          - AttributeName: ExchangeSymbol
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ExchangeSymbolInterval
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+

@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "deploy": "serverless deploy -v",
-    "compute-all-5m": "serverless invoke -f compute-all-5m -l",
     "logs": "serverless logs -f compute -t",
     "remove": "serverless remove"
   },
