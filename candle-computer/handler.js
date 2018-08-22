@@ -141,12 +141,6 @@ const fetchRegisteredSymbols = async () => {
 };
 
 module.exports.computeAll = async (event, context) => {
-  /*
-  const sourceIntervalName = process.env.SOURCE_INTERVAL_NAME;
-  const sourceIntervalDuration = process.env.SOURCE_INTERVAL_DURATION;
-  const targetIntervalName = process.env.TARGET_INTERVAL_NAME;
-  const targetIntervalDuration = process.env.TARGET_INTERVAL_DURATION;
-  */
   const {
     sourceIntervalName,
     sourceIntervalDuration,

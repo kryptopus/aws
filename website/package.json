@@ -1,0 +1,18 @@
+{
+  "name": "website",
+  "description": "Website",
+  "author": "neolao <contact@neolao.com>",
+  "private": true,
+  "repository": "https://github.com/kryptopus/aws.git",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "serverless deploy -v",
+    "sync": "serverless syncToS3",
+    "info": "serverless domainInfo",
+    "clear-cache": "serverless invalidateCloudFrontCache"
+  },
+  "dependencies": {
+    "single-page-app-plugin": "file:./single-page-app-plugin",
+    "serverless": "^1.30.1"
+  }
+}

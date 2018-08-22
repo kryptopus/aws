@@ -1,0 +1,17 @@
+{
+  "name": "API",
+  "description": "API",
+  "author": "neolao <contact@neolao.com>",
+  "private": true,
+  "repository": "https://github.com/kryptopus/aws.git",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "serverless deploy -v"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^8.3.0",
+    "jwk-to-pem": "^2.0.0",
+    "request": "^2.88.0",
+    "serverless": "^1.30.1"
+  }
+}

@@ -4,3 +4,4 @@ symbolTableName: kryptopus-symbols
 candleTableName: kryptopus-candles
 tickerTableName: kryptopus-ticker
 deploymentBucketName: kryptopus-serverless-deployment
+awsCliPath: aws
